@@ -5,32 +5,15 @@
 
 import sys
 
-from PyQt5.QtGui import QIcon, QKeySequence, QImage
-from PyQt5.QtCore import Qt, QPoint
-from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QMenu, QMenuBar, QToolBar, QAction, QSpinBox
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.setWindowTitle("Pyxel")
         self.setGeometry(200,200,400,400)
-        self.centralWidget = QLabel("Hello, World")
-        self.centralWidget.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-        self.setCentralWidget(self.centralWidget)
-
-        self.image = QImage(self.size(), QImage.Format_RGB32)
-        self.image.fill(Qt.white)
-        # variables
-        # drawing flag
-        self.drawing = False
-        # default brush size
-        self.brushSize = 2
-        # default color
-        self.brushColor = Qt.black
-        # QPoint object to tract the point
-        self.lastPoint = QPoint()
-  
-
 
         # 1. Menubar
         #   1.A. Creating Menubar & Menu Items
@@ -71,49 +54,16 @@ class MainWindow(QMainWindow):
 
 
         # 2. Toolbars
-        file_toolbar = QToolBar("File", self)
-        file_toolbar.setMovable(False)
         tools_toolbar = QToolBar("Tools", self)
-        palette_toolbar = QToolBar("Palette", self)
-        
-        #    2.A. Creating Actions for File Toolbar
-        new_project = QAction("New",self)
-        file_toolbar.addAction(new_project)
-        open_project = QAction("Open",self)
-        file_toolbar.addAction(open_project)
-        save_project = QAction("Save",self)
-        file_toolbar.addAction(save_project)
         
         #   2.B. Creating Actions for tools Toolbar
         shape = QAction("Shape",self)
         tools_toolbar.addAction(shape)
         paint = QAction("Paint",self)
         tools_toolbar.addAction(paint)
-        
-        #   2.C. Creating Actions for Palette Toolbar
-        self.fontSizeSpinBox = QSpinBox()
-        self.fontSizeSpinBox.setFocusPolicy(Qt.NoFocus)
-        palette_toolbar.addWidget(self.fontSizeSpinBox)
-        palette = QAction("Palette",self)
-        palette_toolbar.addAction(palette)
-        layers = QAction("Layers",self)
-        palette_toolbar.addAction(layers)
 
         # Adding toolbars to Window
-        self.addToolBar(file_toolbar)
         self.addToolBar(Qt.LeftToolBarArea , tools_toolbar)
-        self.addToolBar(Qt.RightToolBarArea, palette_toolbar)
-
-        # contextMenuPolicy for centralwidget
-        # Setting contextMenuPolicy
-        self.centralWidget.setContextMenuPolicy(Qt.ActionsContextMenu)
-        # Populating the widget with actions
-        self.centralWidget.addAction(self.newAction)
-        self.centralWidget.addAction(self.openAction)
-        self.centralWidget.addAction(self.saveAction)
-        self.centralWidget.addAction(self.copyAction)
-        self.centralWidget.addAction(self.pasteAction)
-        self.centralWidget.addAction(self.cutAction)
 
         
         # Binding Actions in Menubar + Toolbars to Functions
@@ -134,7 +84,6 @@ class MainWindow(QMainWindow):
         self.openAction.setShortcut("Ctrl+O")
         self.saveAction.setShortcut("Ctrl+S")
         # Edit actions
-        # Snip...
         # Using standard keys
         self.copyAction.setShortcut(QKeySequence.Copy)
         self.pasteAction.setShortcut(QKeySequence.Paste)
@@ -148,34 +97,76 @@ class MainWindow(QMainWindow):
         self.newAction.setStatusTip(newTip)
         self.newAction.setToolTip(newTip)
 
+        self.label = QLabel()
+        self.label.setStyleSheet("background-color: lightgreen")
+        w = self.label.width()
+        h = self.label.height()
+        canvas = QPixmap(w, h)
+        canvas.fill(QColor("white")) # Ref.: https://stackoverflow.com/questions/63269098/qpixmap-qpainter-showing-black-window-background
+        self.label.setPixmap(canvas.scaled(w,h ))
+        self.setCentralWidget(self.label)
+        self.label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+        #self.draw_something()
+        self.last_x, self.last_y = None, None
+        print(self.label.size())
+
+    def mouseMoveEvent(self, e):
+        if self.last_x is None: # First event.
+            self.last_x = e.x()
+            self.last_y = e.y()
+            return # Ignore the first time.
+
+        painter = QPainter(self.label.pixmap())
+        painter.drawLine(self.last_x, self.last_y, e.x(), e.y())
+        painter.end()
+        self.update()
+
+        # Update the origin for next time.
+        self.last_x = e.x()
+        self.last_y = e.y()
+
+    def mouseReleaseEvent(self, e):
+        self.last_x = None
+        self.last_y = None
+
+
+
     def newFile(self):
         # Logic for creating a new file goes here...
-        self.centralWidget.setText("<b>File > New</b> clicked")
+        print("Pressed !")
+        # self.centralWidget.setText("<b>File > New</b> clicked")
 
     def openFile(self):
         # Logic for opening an existing file goes here...
-        self.centralWidget.setText("<b>File > Open...</b> clicked")
+        print("Pressed !")
+        # self.centralWidget.setText("<b>File > Open...</b> clicked")
 
     def saveFile(self):
         # Logic for saving a file goes here...
-        self.centralWidget.setText("<b>File > Save</b> clicked")
+        print("Pressed !")
+        # self.centralWidget.setText("<b>File > Save</b> clicked")
 
     def copyContent(self):
         # Logic for copying content goes here...
-        self.centralWidget.setText("<b>Edit > Copy</b> clicked")
+        print("Pressed !")
+        # self.centralWidget.setText("<b>Edit > Copy</b> clicked")
 
     def pasteContent(self):
         # Logic for pasting content goes here...
-        self.centralWidget.setText("<b>Edit > Paste</b> clicked")
+        print("Pressed !")
+        # self.centralWidget.setText("<b>Edit > Paste</b> clicked")
 
     def cutContent(self):
         # Logic for cutting content goes here...
-        self.centralWidget.setText("<b>Edit > Cut</b> clicked")
+        print("Pressed !")
+        # self.centralWidget.setText("<b>Edit > Cut</b> clicked")
 
     def helpContent(self):
         # Logic for launching help goes here...
-        self.centralWidget.setText("<b>Help > Help Content...</b> clicked")
+        print("Pressed !")
+        # self.centralWidget.setText("<b>Help > Help Content...</b> clicked")
 
     def about(self):
         # Logic for showing an about dialog content goes here...
-        self.centralWidget.setText("<b>Help > About...</b> clicked")
+        print("Pressed !")
+        # self.centralWidget.setText("<b>Help > About...</b> clicked")
