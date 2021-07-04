@@ -4,12 +4,60 @@
 # editing this script
 
 import sys
+from PyQt5 import QtWidgets
 
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import QGraphicsScene, QGraphicsView, QMenuBar, QMenu, QAction, QLabel, QWidget
 
-class MainWindow(QMainWindow):
+NUM_BLOCKS_X = 10
+NUM_BLOCKS_Y = 10
+WIDTH = 20
+HEIGHT = 20
+
+
+class QS(QGraphicsScene):
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.lines = []
+
+        self.draw_grid()
+        self.set_opacity(0.3)
+        #self.set_visible(False)
+        #self.delete_grid()
+
+    def draw_grid(self):
+        width = NUM_BLOCKS_X * WIDTH
+        height = NUM_BLOCKS_Y * HEIGHT
+        self.setSceneRect(0, 0, width, height)
+        self.setItemIndexMethod(QGraphicsScene.NoIndex)
+
+        pen = QPen(QColor(255,0,100), 1, Qt.SolidLine)
+
+        for x in range(0,NUM_BLOCKS_X+1):
+            xc = x * WIDTH
+            self.lines.append(self.addLine(xc,0,xc,height,pen))
+
+        for y in range(0,NUM_BLOCKS_Y+1):
+            yc = y * HEIGHT
+            self.lines.append(self.addLine(0,yc,width,yc,pen))
+
+    def set_visible(self,visible=True):
+        for line in self.lines:
+            line.setVisible(visible)
+
+    def delete_grid(self):
+        for line in self.lines:
+            self.removeItem(line)
+        del self.lines[:]
+
+    def set_opacity(self,opacity):
+        for line in self.lines:
+            line.setOpacity(opacity)
+
+class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.setWindowTitle("Pyxel")
@@ -52,19 +100,6 @@ class MainWindow(QMainWindow):
         # Setting menubar as Menubar for Window
         self.setMenuBar(self.menubar)
 
-
-        # 2. Toolbars
-        tools_toolbar = QToolBar("Tools", self)
-        
-        #   2.B. Creating Actions for tools Toolbar
-        shape = QAction("Shape",self)
-        tools_toolbar.addAction(shape)
-        paint = QAction("Paint",self)
-        tools_toolbar.addAction(paint)
-
-        # Adding toolbars to Window
-        self.addToolBar(Qt.LeftToolBarArea , tools_toolbar)
-
         
         # Binding Actions in Menubar + Toolbars to Functions
         self.newAction.triggered.connect(self.newFile)
@@ -89,45 +124,27 @@ class MainWindow(QMainWindow):
         self.pasteAction.setShortcut(QKeySequence.Paste)
         self.cutAction.setShortcut(QKeySequence.Cut)
 
-        # Status Bar
-        self.statusbar = self.statusBar()
-        # Adding a temporary message
-        self.statusbar.showMessage("Ready", 3000)
-        newTip = "Create a new file"
-        self.newAction.setStatusTip(newTip)
-        self.newAction.setToolTip(newTip)
 
-        self.label = QLabel()
-        self.label.setStyleSheet("background-color: lightgreen")
-        w = self.label.width()
-        h = self.label.height()
-        canvas = QPixmap(w, h)
-        canvas.fill(QColor("white")) # Ref.: https://stackoverflow.com/questions/63269098/qpixmap-qpainter-showing-black-window-background
-        self.label.setPixmap(canvas.scaled(w,h ))
-        self.setCentralWidget(self.label)
-        self.label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-        #self.draw_something()
-        self.last_x, self.last_y = None, None
-        print(self.label.size())
-
-    def mouseMoveEvent(self, e):
-        if self.last_x is None: # First event.
-            self.last_x = e.x()
-            self.last_y = e.y()
-            return # Ignore the first time.
-
-        painter = QPainter(self.label.pixmap())
-        painter.drawLine(self.last_x, self.last_y, e.x(), e.y())
-        painter.end()
-        self.update()
-
-        # Update the origin for next time.
-        self.last_x = e.x()
-        self.last_y = e.y()
-
-    def mouseReleaseEvent(self, e):
-        self.last_x = None
-        self.last_y = None
+        # self.label = QLabel()
+        # self.label.setStyleSheet("background-color: lightgreen")
+        # self.label.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        # self.label.setAlignment(Qt.AlignCenter)
+        # self.setMinimumSize(10,10)
+        # w = self.label.width()
+        # h = self.label.height()
+        # self.canvas = QPixmap(w, h)
+        # self.canvas.fill(QColor("white")) # Ref.: https://stackoverflow.com/questions/63269098/qpixmap-qpainter-showing-black-window-background
+        # self.label.setPixmap(self.canvas.scaled(w,h ))
+        # self.setCentralWidget(self.label)
+        # self.label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+        
+        # #self.draw_something()
+        # self.last_x, self.last_y = None, None
+        # print(self.label.size(), w, h)
+        gv = QGraphicsView()
+        gs = QS()
+        gv.setScene(gs)
+        self.setCentralWidget(gv)
 
 
 
