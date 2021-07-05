@@ -100,7 +100,7 @@ class Window(QtWidgets.QWidget):
         VBlayout.addLayout(HBlayout)
 
     def loadImage(self):
-        self.viewer.setPhoto(QtGui.QPixmap(r'C:\\Users\\kabii\Desktop\\a.png'))
+        self.viewer.setPhoto(QtGui.QPixmap('C:\\Users\\kabii\Desktop\\a.png'))
 
     def pixInfo(self):
         self.viewer.toggleDragMode()

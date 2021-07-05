@@ -26,7 +26,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.pen = QPen(Qt.red)
 
-        gv = QGraphicsView(self.gs, self)
+        self.gv = QGraphicsView(self.gs, self)
 
         for i in range(32):
             for j in range(32):
@@ -37,6 +37,25 @@ class MainWindow(QtWidgets.QMainWindow):
         # rect3 = self.gs.addRect(50,10,20,20, self.pen, self.brush1)
         # rect1.setFlag(QGraphicsItem.ItemIsMovable, QGraphicsItem.ItemIsSelectable)
 
-        self.setCentralWidget(gv)
+        self.setCentralWidget(self.gv)
 
-       
+    
+    def wheelEvent(self, event):
+        if True:
+            if event.angleDelta().y() > 0:
+                factor = 1.25
+                self._zoom += 1
+            else:
+                factor = 0.8
+                self._zoom -= 1
+            if self._zoom > 0:
+                self.gv.scale(factor, factor)
+            elif self._zoom == 0:
+                self.gv.fitInView()
+            else:
+                self._zoom = 0
+
+    def toggleDragMode(self):
+        if self.gv.dragMode() == QtWidgets.QGraphicsView.ScrollHandDrag:
+            self.setDragMode(QtWidgets.QGraphicsView.NoDrag)
+
