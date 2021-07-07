@@ -59,3 +59,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.gv.dragMode() == QtWidgets.QGraphicsView.ScrollHandDrag:
             self.setDragMode(QtWidgets.QGraphicsView.NoDrag)
 
+    def mousePressEvent(self, event):
+        print("I was clicked !")
+        return super().mousePressEvent(event)
+
