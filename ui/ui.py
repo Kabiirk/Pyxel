@@ -6,9 +6,50 @@
 import sys
 from PyQt5 import QtWidgets
 
-from PyQt5.QtGui import QBrush, QPainter, QPen
+from PyQt5.QtGui import QBrush, QPainter, QPen, QPixmap
 from PyQt5.QtCore import *
-from PyQt5.QtWidgets import QGraphicsScene, QGraphicsView, QGraphicsItem, QMenuBar, QMenu, QAction, QLabel, QWidget
+from PyQt5.QtWidgets import QGraphicsRectItem, QGraphicsScene, QGraphicsView, QGraphicsItem, QMenuBar, QMenu, QAction, QLabel, QWidget,QGraphicsPixmapItem
+
+
+class graphics_Object(QGraphicsPixmapItem):
+    def __init__(self, parent=None):
+        super(graphics_Object, self).__init__(parent)
+        pixmap = QPixmap("a.png")
+        self.setPixmap(pixmap.scaled(40, 40, Qt.KeepAspectRatio))
+        self.setFlag(QGraphicsPixmapItem.ItemIsSelectable)
+        self.setFlag(QGraphicsPixmapItem.ItemIsMovable)
+        self.setAcceptHoverEvents(True)
+
+    def hoverEnterEvent(self, event):
+        print('hello')
+
+
+class graphicsScene(QGraphicsScene):
+    def __init__(self, parent=None):
+        super(graphicsScene, self).__init__(parent)
+        for i in range(2):
+            for j in range(2):
+                self.graphics_item = graphics_Object()
+
+
+    # def mousePressEvent(self, event):
+    #     self.graphics_item = graphics_Object()
+        
+    def mouseReleaseEvent(self, event):
+        print('adding to scene')
+        self.addItem(self.graphics_item)
+        self.graphics_item.setPos(event.scenePos())
+
+class customPixel(QGraphicsRectItem):
+    def __init__(self, x, y, h, w, pen, brush, parent=None):
+        super(customPixel, self).__init__(x, y, h, w, pen, brush, parent)
+        self.setBrush = brush
+        self.setPen = pen
+        self.setPos(x,y)
+        self.setAcceptHoverEvents(True)
+
+    def hoverEnterEvent(self, event):
+        print('hello')
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -28,38 +69,17 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.gv = QGraphicsView(self.gs, self)
 
-        for i in range(32):
-            for j in range(32):
-                rect = self.gs.addRect(i*20, j*20, 20, 20, self.pen, self.brush1)
-                rect.setAcceptHoverEvents(True)
-        # rect1 = self.gs.addRect(10,10,20,20, self.pen, self.brush1)
-        # rect2 = self.gs.addRect(30,10,20,20, self.pen, self.brush1)
-        # rect3 = self.gs.addRect(50,10,20,20, self.pen, self.brush1)
-        # rect1.setFlag(QGraphicsItem.ItemIsMovable, QGraphicsItem.ItemIsSelectable)
+        for i in range(10):
+            for j in range(10):
+                rect = self.gs.addItem(customPixel(i*20, j*20, 20, 20, self.pen, self.brush1))
+        # # rect1 = self.gs.addRect(10,10,20,20, self.pen, self.brush1)
+        # # rect2 = self.gs.addRect(30,10,20,20, self.pen, self.brush1)
+        # # rect3 = self.gs.addRect(50,10,20,20, self.pen, self.brush1)
+        # # rect1.setFlag(QGraphicsItem.ItemIsMovable, QGraphicsItem.ItemIsSelectable)
 
         self.setCentralWidget(self.gv)
 
     
-    def wheelEvent(self, event):
-        if True:
-            if event.angleDelta().y() > 0:
-                factor = 1.25
-                self._zoom += 1
-            else:
-                factor = 0.8
-                self._zoom -= 1
-            if self._zoom > 0:
-                self.gv.scale(factor, factor)
-            elif self._zoom == 0:
-                self.gv.fitInView()
-            else:
-                self._zoom = 0
-
-    def toggleDragMode(self):
-        if self.gv.dragMode() == QtWidgets.QGraphicsView.ScrollHandDrag:
-            self.setDragMode(QtWidgets.QGraphicsView.NoDrag)
-
-    def mousePressEvent(self, event):
-        print("I was clicked !")
-        return super().mousePressEvent(event)
+    def hoverEnterEvent(self, event):
+        print('hello')
 
