@@ -9,7 +9,7 @@
 import sys
 from PyQt5 import QtWidgets
 
-from PyQt5.QtGui import QBrush, QPainter, QPen, QPixmap, QColor
+from PyQt5.QtGui import QBrush, QImage, QPainter, QPen, QPixmap, QColor
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import QGraphicsRectItem, QGraphicsScene, QGraphicsView, QGraphicsItem, QMenuBar, QMenu, QAction, QLabel, QWidget,QGraphicsPixmapItem
 
@@ -51,10 +51,5 @@ class MainWindow(QtWidgets.QMainWindow):
         for i in range(20):
             for j in range(20):
                 self.gs.addItem(Pixel(i*20, j*20,20,20))
-
         self.setCentralWidget(self.gv)
-
-    
-    def hoverEnterEvent(self, event):
-        print('hello')
 
