@@ -37,10 +37,13 @@ class PhotoViewer(QtWidgets.QGraphicsView):
     def __init__(self, parent):
         super(PhotoViewer, self).__init__(parent)
         self._zoom = 0
-        self._empty = True
+        self._empty = False
         self._scene = QtWidgets.QGraphicsScene(self)
-        self._photo = QtWidgets.QGraphicsPixmapItem()
-        self._scene.addItem(self._photo)
+        # self._photo = QtWidgets.QGraphicsPixmapItem()
+        # self._scene.addItem(self._photo)
+        for i in range(20):
+            for j in range(20):
+                self._scene.addItem(Pixel(i*20, j*20,20,20))
         self.setScene(self._scene)
         self.setTransformationAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
@@ -50,9 +53,11 @@ class PhotoViewer(QtWidgets.QGraphicsView):
         self.setFrameShape(QtWidgets.QFrame.NoFrame)
 
     def hasPhoto(self):
+        print("Has Photo")
         return not self._empty
 
     def fitInView(self, scale=True):
+        print("fit")
         rect = QRectF(self._photo.pixmap().rect())
         if not rect.isNull():
             self.setSceneRect(rect)
@@ -67,6 +72,7 @@ class PhotoViewer(QtWidgets.QGraphicsView):
             self._zoom = 0
 
     def setPhoto(self, pixmap=None):
+        print("set photo")
         self._zoom = 0
         if pixmap and not pixmap.isNull():
             self._empty = False
@@ -79,6 +85,7 @@ class PhotoViewer(QtWidgets.QGraphicsView):
         self.fitInView()
 
     def wheelEvent(self, event):
+        print("wheel")
         if self.hasPhoto():
             if event.angleDelta().y() > 0:
                 factor = 1.25
@@ -99,10 +106,10 @@ class PhotoViewer(QtWidgets.QGraphicsView):
         elif not self._photo.pixmap().isNull():
             self.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
 
-    def mousePressEvent(self, event):
-        if self._photo.isUnderMouse():
-            self.photoClicked.emit(self.mapToScene(event.pos()).toPoint())
-        super(PhotoViewer, self).mousePressEvent(event)
+    # def mousePressEvent(self, event):
+    #     if self._photo.isUnderMouse():
+    #         self.photoClicked.emit(self.mapToScene(event.pos()).toPoint())
+    #     super(PhotoViewer, self).mousePressEvent(event)
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
@@ -120,8 +127,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.pen = QPen(Qt.red)
 
-        self.gv = QGraphicsView(self.gs)
-        for i in range(20):
-            for j in range(20):
-                self.gs.addItem(Pixel(i*20, j*20,20,20))
+        self.gv = PhotoViewer(self.gs)
+        # for i in range(20):
+        #     for j in range(20):
+        #         self.gs.addItem(Pixel(i*20, j*20,20,20))
         self.setCentralWidget(self.gv)
