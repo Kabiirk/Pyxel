@@ -11,7 +11,7 @@ from PyQt5 import QtWidgets
 
 from PyQt5.QtGui import QBrush, QImage, QPainter, QPen, QPixmap, QColor
 from PyQt5.QtCore import *
-from PyQt5.QtWidgets import QGraphicsRectItem, QGraphicsScene, QGraphicsView, QGraphicsItem, QMenuBar, QMenu, QAction, QLabel, QWidget,QGraphicsPixmapItem
+from PyQt5.QtWidgets import QGraphicsRectItem, QGraphicsScene, QGraphicsView, QGraphicsItem, QMenuBar, QMenu, QAction, QLabel, QStatusBar, QWidget,QGraphicsPixmapItem
 
 
 class Pixel(QGraphicsRectItem):
@@ -63,6 +63,7 @@ class PhotoViewer(QtWidgets.QGraphicsView):
             self.setSceneRect(rect)
             if self.hasPhoto():
                 unity = self.transform().mapRect(QRectF(0, 0, 1, 1))
+                print("This executes !!")
                 self.scale(1 / unity.width(), 1 / unity.height())
                 viewrect = self.viewport().rect()
                 scenerect = self.transform().mapRect(rect)
@@ -70,19 +71,6 @@ class PhotoViewer(QtWidgets.QGraphicsView):
                              viewrect.height() / scenerect.height())
                 self.scale(factor, factor)
             self._zoom = 0
-
-    def setPhoto(self, pixmap=None):
-        print("set photo")
-        self._zoom = 0
-        if pixmap and not pixmap.isNull():
-            self._empty = False
-            self.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
-            self._photo.setPixmap(pixmap)
-        else:
-            self._empty = True
-            self.setDragMode(QtWidgets.QGraphicsView.NoDrag)
-            self._photo.setPixmap(QPixmap())
-        self.fitInView()
 
     def wheelEvent(self, event):
         print("wheel")
@@ -99,17 +87,6 @@ class PhotoViewer(QtWidgets.QGraphicsView):
                 self.fitInView()
             else:
                 self._zoom = 0
-
-    def toggleDragMode(self):
-        if self.dragMode() == QtWidgets.QGraphicsView.ScrollHandDrag:
-            self.setDragMode(QtWidgets.QGraphicsView.NoDrag)
-        elif not self._photo.pixmap().isNull():
-            self.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
-
-    # def mousePressEvent(self, event):
-    #     if self._photo.isUnderMouse():
-    #         self.photoClicked.emit(self.mapToScene(event.pos()).toPoint())
-    #     super(PhotoViewer, self).mousePressEvent(event)
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
@@ -131,4 +108,6 @@ class MainWindow(QtWidgets.QMainWindow):
         # for i in range(20):
         #     for j in range(20):
         #         self.gs.addItem(Pixel(i*20, j*20,20,20))
+
+        self.setMenuBar(QMenuBar())
         self.setCentralWidget(self.gv)
