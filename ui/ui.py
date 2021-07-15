@@ -11,7 +11,7 @@ from PyQt5 import QtWidgets
 
 from PyQt5.QtGui import QBrush, QImage, QPainter, QPen, QPixmap, QColor
 from PyQt5.QtCore import *
-from PyQt5.QtWidgets import QGraphicsRectItem, QGraphicsScene, QGraphicsView, QGraphicsItem, QMenuBar, QMenu, QAction, QLabel, QStatusBar, QWidget,QGraphicsPixmapItem
+from PyQt5.QtWidgets import QGraphicsRectItem, QGraphicsScene, QGraphicsView, QGraphicsItem, QMenuBar, QMenu, QAction, QLabel, QStatusBar, QToolBar, QWidget,QGraphicsPixmapItem
 
 
 class Pixel(QGraphicsRectItem):
@@ -28,8 +28,8 @@ class Pixel(QGraphicsRectItem):
         self.setBrush(self.default_color)
 
     def mousePressEvent(self, event):
-        self.setBrush(QBrush(Qt.red))
-        self.default_color = QBrush(Qt.red)
+        self.setBrush(QBrush(Qt.blue))
+        self.default_color = QBrush(Qt.blue)
 
 class PhotoViewer(QtWidgets.QGraphicsView):
     photoClicked = pyqtSignal(QPoint)
@@ -53,11 +53,9 @@ class PhotoViewer(QtWidgets.QGraphicsView):
         self.setFrameShape(QtWidgets.QFrame.NoFrame)
 
     def hasPhoto(self):
-        print("Has Photo")
         return not self._empty
 
     def fitInView(self, scale=True):
-        print("fit")
         rect = QRectF(self._photo.pixmap().rect())
         if not rect.isNull():
             self.setSceneRect(rect)
@@ -73,7 +71,6 @@ class PhotoViewer(QtWidgets.QGraphicsView):
             self._zoom = 0
 
     def wheelEvent(self, event):
-        print("wheel")
         if self.hasPhoto():
             if event.angleDelta().y() > 0:
                 factor = 1.25
@@ -109,5 +106,20 @@ class MainWindow(QtWidgets.QMainWindow):
         #     for j in range(20):
         #         self.gs.addItem(Pixel(i*20, j*20,20,20))
 
-        self.setMenuBar(QMenuBar())
+        # Menubar
+        menuBar = self.menuBar()
+
+        fileMenu = QMenu("&File", self)
+        editMenu = QMenu("&Edit", self)
+        helpMenu = QMenu("&Help", self)
+        menuBar.addMenu(fileMenu)
+        menuBar.addMenu(editMenu)
+        menuBar.addMenu(helpMenu)
+
+        # Toolbar
+        editToolBar = QToolBar("Edit", self)
+        self.addToolBar(Qt.LeftToolBarArea, editToolBar)
+        helpToolBar = QToolBar("Help", self)
+        self.addToolBar(Qt.RightToolBarArea, helpToolBar)
+
         self.setCentralWidget(self.gv)
