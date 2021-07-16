@@ -18,18 +18,19 @@ class Pixel(QGraphicsRectItem):
     def __init__(self, x,y,h,w, parent=None):
         super().__init__(x,y,h,w, parent=None)
         self.default_color = QBrush(Qt.white)
+        self.hover_color = QBrush(Qt.blue)
         self.setAcceptHoverEvents(True)
         self.setBrush(self.default_color)
 
     def hoverEnterEvent(self, event):
-        self.setBrush(QBrush(Qt.black))
+        self.setBrush(self.hover_color)
     
     def hoverLeaveEvent(self, event):
         self.setBrush(self.default_color)
 
     def mousePressEvent(self, event):
-        self.setBrush(QBrush(Qt.blue))
-        self.default_color = QBrush(Qt.blue)
+        #self.setBrush(self.hover_color)
+        self.default_color = self.hover_color
 
 class PhotoViewer(QtWidgets.QGraphicsView):
     photoClicked = pyqtSignal(QPoint)
@@ -84,9 +85,6 @@ class PhotoViewer(QtWidgets.QGraphicsView):
                 self.fitInView()
             else:
                 self._zoom = 0
-
-    def changebrushcolor(self, newbrush):
-        self.brush3 = newbrush
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
