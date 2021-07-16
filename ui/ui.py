@@ -35,7 +35,7 @@ class PhotoViewer(QtWidgets.QGraphicsView):
     photoClicked = pyqtSignal(QPoint)
 
     def __init__(self, parent):
-        super(PhotoViewer, self).__init__(parent)
+        super(PhotoViewer, self).__init__( parent)
         self._zoom = 0
         self._empty = False
         self._scene = QtWidgets.QGraphicsScene(self)
@@ -85,6 +85,9 @@ class PhotoViewer(QtWidgets.QGraphicsView):
             else:
                 self._zoom = 0
 
+    def changebrushcolor(self, newbrush):
+        self.brush3 = newbrush
+
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -97,7 +100,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.gs.setBackgroundBrush(QBrush(Qt.blue))
 
         self.brush1 = QBrush(Qt.white)
-        self.brush2 = QBrush(Qt.black)
+        self.brush2 = QBrush(Qt.blue)
 
         self.pen = QPen(Qt.red)
 
@@ -110,16 +113,50 @@ class MainWindow(QtWidgets.QMainWindow):
         menuBar = self.menuBar()
 
         fileMenu = QMenu("&File", self)
+        self.newAction = QAction("&New", self)
+        self.openAction = QAction("&Open...", self)
+        self.saveAction = QAction("&Save", self)
+        self.exitAction = QAction("&Exit", self)
+        fileMenu.addAction(self.newAction)
+        fileMenu.addAction(self.openAction)
+        fileMenu.addAction(self.saveAction)
+        fileMenu.addAction(self.exitAction)
+
         editMenu = QMenu("&Edit", self)
+        self.copyAction = QAction("&Copy", self)
+        self.pasteAction = QAction("&Paste", self)
+        self.cutAction = QAction("C&ut", self)
+        editMenu.addAction(self.copyAction)
+        editMenu.addAction(self.pasteAction)
+        editMenu.addAction(self.cutAction)
+        
         helpMenu = QMenu("&Help", self)
+        self.helpContentAction = QAction("&Help Content", self)
+        self.aboutAction = QAction("&About", self)
+        helpMenu.addAction(self.helpContentAction)
+        helpMenu.addAction(self.aboutAction)
+
         menuBar.addMenu(fileMenu)
         menuBar.addMenu(editMenu)
         menuBar.addMenu(helpMenu)
 
         # Toolbar
+        self.ColorAction = QAction("&Color", self)
+
         editToolBar = QToolBar("Edit", self)
         self.addToolBar(Qt.LeftToolBarArea, editToolBar)
         helpToolBar = QToolBar("Help", self)
+        helpToolBar.addAction(self.ColorAction)
         self.addToolBar(Qt.RightToolBarArea, helpToolBar)
 
+        # Binding all the Actions to options
+        # Menubar Actions
+        self.exitAction.triggered.connect(self.close)
+
+        # Toolbar actions
+        self.ColorAction.triggered.connect(self.changeBrushColor)
+
         self.setCentralWidget(self.gv)
+
+    def changeBrushColor(self):
+        print("I was pressed !")
