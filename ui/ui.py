@@ -15,10 +15,10 @@ from PyQt5.QtWidgets import QGraphicsRectItem, QGraphicsScene, QGraphicsView, QG
 
 
 class Pixel(QGraphicsRectItem):
-    def __init__(self, x,y,h,w, parent=None):
+    def __init__(self, x,y,h,w, *args, parent=None):
         super().__init__(x,y,h,w, parent=None)
         self.default_color = QBrush(Qt.white)
-        self.hover_color = QBrush(Qt.blue)
+        self.hover_color = args[0]
         self.setAcceptHoverEvents(True)
         self.setBrush(self.default_color)
 
@@ -40,11 +40,12 @@ class PhotoViewer(QtWidgets.QGraphicsView):
         self._zoom = 0
         self._empty = False
         self._scene = QtWidgets.QGraphicsScene(self)
+        self.brush3 = QBrush(Qt.red)
         # self._photo = QtWidgets.QGraphicsPixmapItem()
         # self._scene.addItem(self._photo)
         for i in range(20):
             for j in range(20):
-                self._scene.addItem(Pixel(i*20, j*20,20,20))
+                self._scene.addItem(Pixel(i*20, j*20,20,20, self.brush3))
         self.setScene(self._scene)
         self.setTransformationAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
@@ -85,6 +86,9 @@ class PhotoViewer(QtWidgets.QGraphicsView):
                 self.fitInView()
             else:
                 self._zoom = 0
+    
+    def changebrushforpixel(self, brush):
+        self.brush3 = brush
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
@@ -158,3 +162,4 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def changeBrushColor(self):
         print("I was pressed !")
+        self.gv.changebrushforpixel(QBrush(Qt.blue))
