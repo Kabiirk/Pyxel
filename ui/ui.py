@@ -42,7 +42,7 @@ class PhotoViewer(QtWidgets.QGraphicsView):
         self._scene = QtWidgets.QGraphicsScene(self)
         self.brush3 = QBrush(Qt.red)
         self._photo = QtWidgets.QGraphicsPixmapItem()
-        canvas = QPixmap(10, 20)
+        canvas = QPixmap(200, 200)
         canvas.fill(QColor("white")) # ref. : https://stackoverflow.com/questions/63269098/qpixmap-qpainter-showing-black-window-background
         self._photo.setPixmap(canvas)
         self._scene.addItem(self._photo)
@@ -50,6 +50,7 @@ class PhotoViewer(QtWidgets.QGraphicsView):
         #     for j in range(20):
         #         self._scene.addItem(Pixel(i*20, j*20,20,20, self.brush3))
         self.setScene(self._scene)
+        #self.draw_something()
         self.setTransformationAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -66,7 +67,6 @@ class PhotoViewer(QtWidgets.QGraphicsView):
             self.setSceneRect(rect)
             if self.hasPhoto():
                 unity = self.transform().mapRect(QRectF(0, 0, 1, 1))
-                print("This executes !!")
                 self.scale(1 / unity.width(), 1 / unity.height())
                 viewrect = self.viewport().rect()
                 scenerect = self.transform().mapRect(rect)
@@ -90,11 +90,23 @@ class PhotoViewer(QtWidgets.QGraphicsView):
             else:
                 self._zoom = 0
     
-    def mouseMoveEvent(self, e):
-        painter = QPainter(self._photo.pixmap())
-        painter.drawPoint(e.x(), e.y())
+    def draw_something(self):
+        #painter = QPainter(self._photo.pixmap())
+        pixmap = self._photo.pixmap()
+        painter = QPainter()
+        painter.begin(pixmap)
+        painter.drawLine(10, 10, 50, 50)
+        self._photo.setPixmap(pixmap)
         painter.end()
-        self.update()
+
+    def mouseMoveEvent(self, e):
+        pixmap = self._photo.pixmap()
+        painter = QPainter()
+        painter.begin(pixmap)
+        painter.drawPoint(e.x(), e.y())
+        self._photo.setPixmap(pixmap)
+        painter.end()
+        #self.update()
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
@@ -162,4 +174,3 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def changeBrushColor(self):
         print("I was pressed !")
-        self.gv.changebrushforpixel(QBrush(Qt.blue))
