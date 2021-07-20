@@ -40,7 +40,7 @@ class PhotoViewer(QtWidgets.QGraphicsView):
         self._zoom = 0
         self._empty = False
         self._scene = QtWidgets.QGraphicsScene(self)
-        self.brush3 = QBrush(Qt.red)
+        self.pen_color = Qt.red
         self._photo = QtWidgets.QGraphicsPixmapItem()
         canvas = QPixmap(200, 200)
         canvas.fill(QColor("white")) # ref. : https://stackoverflow.com/questions/63269098/qpixmap-qpainter-showing-black-window-background
@@ -100,9 +100,13 @@ class PhotoViewer(QtWidgets.QGraphicsView):
         painter.end()
 
     def mouseMoveEvent(self, e):
+        # ref https://stackoverflow.com/questions/39866813/qt5-scribble-with-layers-qpaintdevice-cannot-destroy-device-that-is-being-pai
         pixmap = self._photo.pixmap()
         painter = QPainter()
         painter.begin(pixmap)
+        p = painter.pen()
+        p.setColor(self.pen_color)
+        painter.setPen(p)
         painter.drawPoint(e.x(), e.y())
         self._photo.setPixmap(pixmap)
         painter.end()
@@ -173,4 +177,5 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(self.gv)
 
     def changeBrushColor(self):
+        self.gv.pen_color = Qt.blue
         print("I was pressed !")
