@@ -42,7 +42,7 @@ class PhotoViewer(QtWidgets.QGraphicsView):
         self._scene = QtWidgets.QGraphicsScene(self)
         self.pen_color = Qt.red
         self._photo = QtWidgets.QGraphicsPixmapItem()
-        canvas = QPixmap(200, 200)
+        canvas = QPixmap(100, 100)
         canvas.fill(QColor("white")) # ref. : https://stackoverflow.com/questions/63269098/qpixmap-qpainter-showing-black-window-background
         self._photo.setPixmap(canvas)
         self._scene.addItem(self._photo)
@@ -160,11 +160,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Toolbar
         self.ColorAction = QAction("&Color", self)
+        self.EraseAction = QAction("&Erase", self)
 
         editToolBar = QToolBar("Edit", self)
         self.addToolBar(Qt.LeftToolBarArea, editToolBar)
         helpToolBar = QToolBar("Help", self)
         helpToolBar.addAction(self.ColorAction)
+        helpToolBar.addAction(self.EraseAction)
         self.addToolBar(Qt.RightToolBarArea, helpToolBar)
 
         # Binding all the Actions to options
@@ -173,9 +175,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Toolbar actions
         self.ColorAction.triggered.connect(self.changeBrushColor)
+        self.EraseAction.triggered.connect(self.changeToEraser)
 
         self.setCentralWidget(self.gv)
 
     def changeBrushColor(self):
         self.gv.pen_color = Qt.blue
-        print("I was pressed !")
+
+    def changeToEraser(self):
+        self.gv.pen_color = Qt.white
