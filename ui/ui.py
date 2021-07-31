@@ -42,15 +42,11 @@ class PhotoViewer(QtWidgets.QGraphicsView):
         self._scene = QtWidgets.QGraphicsScene(self)
         self.pen_color = Qt.red
         self._photo = QtWidgets.QGraphicsPixmapItem()
-        canvas = QPixmap(100, 100)
+        canvas = QPixmap(200, 200)
         canvas.fill(QColor("white")) # ref. : https://stackoverflow.com/questions/63269098/qpixmap-qpainter-showing-black-window-background
         self._photo.setPixmap(canvas)
         self._scene.addItem(self._photo)
-        # for i in range(20):
-        #     for j in range(20):
-        #         self._scene.addItem(Pixel(i*20, j*20,20,20, self.brush3))
         self.setScene(self._scene)
-        #self.draw_something()
         self.setTransformationAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -123,9 +119,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.gs = QGraphicsScene()
 
         self.gv = PhotoViewer(self)
-        # for i in range(20):
-        #     for j in range(20):
-        #         self.gs.addItem(Pixel(i*20, j*20,20,20))
 
         # Menubar
         menuBar = self.menuBar()
