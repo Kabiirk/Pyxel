@@ -11,7 +11,7 @@ from PyQt5 import QtWidgets
 
 from PyQt5.QtGui import QBrush, QImage, QPainter, QPen, QPixmap, QColor
 from PyQt5.QtCore import *
-from PyQt5.QtWidgets import QGraphicsRectItem, QGraphicsScene, QGraphicsView, QGraphicsItem, QMenuBar, QMenu, QAction, QLabel, QStatusBar, QToolBar, QWidget,QGraphicsPixmapItem
+from PyQt5.QtWidgets import QGraphicsRectItem, QGraphicsScene, QGraphicsView, QGraphicsItem, QMenuBar, QMenu, QAction, QLabel, QStatusBar, QToolBar, QWidget,QGraphicsPixmapItem, QGraphicsBlurEffect
 
 
 class Pixel(QGraphicsRectItem):
@@ -116,9 +116,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self._zoom = 0
 
-        self.gs = QGraphicsScene()
+        # self.gs = QGraphicsScene()
 
-        self.gv = PhotoViewer(self)
+        # self.gv = PhotoViewer(self)
+        # self.setWindowOpacity(.50)
+        # self.setGraphicsEffect(QGraphicsBlurEffect())
 
         # Menubar
         menuBar = self.menuBar()
@@ -167,13 +169,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.exitAction.triggered.connect(self.close)
 
         # Toolbar actions
-        self.ColorAction.triggered.connect(self.changeBrushColor)
-        self.EraseAction.triggered.connect(self.changeToEraser)
+        # self.ColorAction.triggered.connect(self.changeBrushColor)
+        # self.EraseAction.triggered.connect(self.changeToEraser)
 
-        self.setCentralWidget(self.gv)
+        #self.setCentralWidget(self.gv)
 
-    def changeBrushColor(self):
-        self.gv.pen_color = Qt.blue
+    # def changeBrushColor(self):
+    #     self.gv.pen_color = Qt.blue
 
-    def changeToEraser(self):
-        self.gv.pen_color = Qt.white
+    # def changeToEraser(self):
+    #     self.gv.pen_color = Qt.white
