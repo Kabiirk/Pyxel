@@ -6,12 +6,12 @@
 # Ref : 
 # Hover events = https://stackoverflow.com/questions/37090727/hover-event-for-a-qgraphicsitem-pyqt4
 
-import sys
+import sys, os
 from PyQt5 import QtWidgets
 
 from PyQt5.QtGui import QBrush, QImage, QPainter, QPen, QPixmap, QColor
 from PyQt5.QtCore import *
-from PyQt5.QtWidgets import QGraphicsRectItem, QGraphicsScene, QGraphicsView, QGraphicsItem, QMenuBar, QMenu, QAction, QLabel, QStatusBar, QToolBar, QWidget,QGraphicsPixmapItem, QGraphicsBlurEffect
+from PyQt5.QtWidgets import QGraphicsRectItem, QGraphicsScene, QGraphicsView, QGraphicsItem, QMenuBar, QMenu, QAction, QLabel, QStatusBar, QTextEdit, QToolBar, QWidget,QGraphicsPixmapItem, QGraphicsBlurEffect
 
 
 class Pixel(QGraphicsRectItem):
@@ -121,6 +121,10 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.gv = PhotoViewer(self)
         # self.setWindowOpacity(.50)
         # self.setGraphicsEffect(QGraphicsBlurEffect())
+        path = os.getcwd()
+        self.textEdit = QTextEdit()
+        self.setCentralWidget(self.textEdit)
+        self.textEdit.setText(path + ">")
 
         # Menubar
         menuBar = self.menuBar()
