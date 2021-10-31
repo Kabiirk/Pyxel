@@ -2,6 +2,8 @@
 import platform
 import ctypes
 
+from PyQt5.QtGui import QColor, QPalette
+
 if platform.system() == 'Darwin':
     from AppKit import *
 
@@ -170,20 +172,54 @@ def GlobalBlur(HWND,hexColor=False,Acrylic=False,Dark=False,QWidget=None):
         MacBlur(QWidget)
 
 if __name__ == '__main__':
-    import sys
+    import sys, os
     from PyQt5.QtWidgets import *
     from PyQt5.QtCore import *
+    from PyQt5.QtGui import QColor, QPalette
 
     class MainWindow(QWidget):
         def __init__(self):
             super(MainWindow, self).__init__()
-            #self.setWindowFlags(Qt.FramelessWindowHint)
             self.setAttribute(Qt.WA_TranslucentBackground)
             self.resize(500, 400)
+            self.setWindowTitle("PyCLI")
+            layout = QVBoxLayout()
+            self.setLayout(layout)
+
+            palette = QPalette()
+            palette.setColor(QPalette.Window, QColor(69,69,69,0))
+            
+            self.editor_command = QPlainTextEdit()
+            self.editor_command.setPalette(palette)
+            layout.addWidget(self.editor_command, 4)
+
+            self.editor_output = QPlainTextEdit()
+            layout.addWidget(self.editor_output, 4)
+
+            button_layout = QHBoxLayout()
+            layout.addLayout(button_layout)
+
+            self.button_run = QPushButton("&Run", clicked=self.run_command)
+            button_layout.addWidget(self.button_run)
+            
+            self.button_clear = QPushButton("&Clear", clicked=self.clear_output)
+            button_layout.addWidget(self.button_clear)
+
+        def run_command(self):
+            command = self.editor_command.toPlainText().strip()
+            p = os.popen(command)
+            if(p):
+                self.editor_output.clear()
+                output = p.read()
+                self.editor_output.insertPlainText(output)
+
+        def clear_output(self):
+            self.editor_output.clear()
+
             
             hWnd = self.winId()
             #print(hWnd)
-            l = QLabel('Can you see me?',self)
+            #l = QLabel('Can you see me?',self)
             GlobalBlur(hWnd,Dark=True,QWidget=self)
             
 
