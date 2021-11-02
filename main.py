@@ -3,6 +3,7 @@
 # https://github.com/Peticali/PythonBlurBehind for code inspiration
 import platform
 import ctypes
+from PyQt5 import QtCore
 
 from PyQt5.QtGui import QColor, QFont
 
@@ -188,15 +189,26 @@ if __name__ == '__main__':
             hWnd = self.winId()
             #print(hWnd)
             #l = QLabel('Can you see me?', self)
-            t = QTextEdit(parent=self)
-            t.setStyleSheet("QTextEdit { background-color: rgba(109, 255, 99, 0); border: 0 }")
-            t.setTextColor(QColor('#FFFFFF'))
-            font = QFont("Courier", 10,QFont.Bold)
-            t.setFont(font)
+            self.t = QTextEdit(parent=self)
+            self.t.installEventFilter(self)
+            self.t.setStyleSheet("QTextEdit { background-color: rgba(0, 0, 0, 0); border: 0 }")
+            self.t.setTextColor(QColor('#FFFFFF'))
+            font = QFont("Consolas", 10)
+            self.t.setFont(font)
+            self.cursor = self.t.textCursor()
+            self.cursor.insertText("PyTerminal > ")
+            #t.setText('PyTerm >')
             GlobalBlur(hWnd,Dark=True,QWidget=self)
             
 
-            self.setStyleSheet("background-color: rgba(0, 0, 0, 0)")
+            self.setStyleSheet("background-color: rgba(0, 0, 0, 50); border: 0")
+
+        def eventFilter(self, obj, event):
+            if event.type() == QtCore.QEvent.KeyPress and obj is self.t:
+                if event.key() == QtCore.Qt.Key_Return and self.t.hasFocus():
+                    self.cursor.insertText("PyTerminal > ")
+                    
+            return super().eventFilter(obj, event)
 
     app = QApplication(sys.argv)
     mw = MainWindow()
