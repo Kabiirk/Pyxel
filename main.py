@@ -1,6 +1,7 @@
 #source: https://github.com/Opticos/GWSL-Source/blob/master/blur.py , https://www.cnblogs.com/zhiyiYo/p/14659981.html , https://github.com/ifwe/digsby/blob/master/digsby/src/gui/vista.py
 # FULL CREDIT TO : 
 # https://github.com/Peticali/PythonBlurBehind for code inspiration
+import os
 import platform
 import ctypes
 from PyQt5 import QtCore
@@ -183,12 +184,14 @@ if __name__ == '__main__':
         def __init__(self):
             super(MainWindow, self).__init__()
             #self.setWindowFlags(Qt.FramelessWindowHint)
+            self.backspace_buffer = 0
             self.setAttribute(Qt.WA_TranslucentBackground)
             self.resize(500, 400)
             
             hWnd = self.winId()
             #print(hWnd)
             #l = QLabel('Can you see me?', self)
+            layout = QVBoxLayout()
             self.t = QTextEdit(parent=self)
             self.t.installEventFilter(self)
             self.t.setStyleSheet("QTextEdit { background-color: rgba(0, 0, 0, 0); border: 0 }")
@@ -196,7 +199,9 @@ if __name__ == '__main__':
             font = QFont("Consolas", 10)
             self.t.setFont(font)
             self.cursor = self.t.textCursor()
-            self.cursor.insertText("PyTerminal > ")
+            self.cursor.insertText(str(os.getcwd())+" > ")
+            layout.addWidget(self.t)
+            self.setLayout(layout)
             #t.setText('PyTerm >')
             GlobalBlur(hWnd,Dark=True,QWidget=self)
             
@@ -206,7 +211,12 @@ if __name__ == '__main__':
         def eventFilter(self, obj, event):
             if event.type() == QtCore.QEvent.KeyPress and obj is self.t:
                 if event.key() == QtCore.Qt.Key_Return and self.t.hasFocus():
-                    self.cursor.insertText("PyTerminal > ")
+                    self.cursor.insertText(str(os.getcwd())+" > ")
+                if event.key() == QtCore.Qt.Key_Backspace and self.t.hasFocus():
+                    self.backspace_buffer -= 1
+                if (event.key() != QtCore.Qt.Key_Backspace and event.key() != QtCore.Qt.Key_Return)and self.t.hasFocus():
+                    self.backspace_buffer += 1
+                    print(self.backspace_buffer)
                     
             return super().eventFilter(obj, event)
 
