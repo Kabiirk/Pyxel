@@ -160,13 +160,17 @@ def GlobalBlur(HWND,hexColor=False,Acrylic=False,Dark=False,QWidget=None):
     system = platform.system()
 
     if system == 'Windows':
-        if release == 'Vista': 
+        print('Windows')
+        if release == 'Vista':
+            print('Winblur')
             Win7Blur(HWND,Acrylic)
         else:
             release = int(float(release))
             if release == 10 or release == 8 or release == 11: #idk what windows 8.1 spits, if is '8.1' int(float(release)) will work...
+                print('blur')
                 blur(HWND,hexColor,Acrylic,Dark)
             else:
+                print('Winblur 2')
                 Win7Blur(HWND,Acrylic)
     
     if system == 'Linux':
@@ -203,14 +207,15 @@ if __name__ == '__main__':
             layout.addWidget(self.t)
             self.setLayout(layout)
             #t.setText('PyTerm >')
-            GlobalBlur(hWnd,Dark=True,QWidget=self)
+            GlobalBlur(hWnd,hexColor='#12121299',Dark=True,QWidget=self)
             
 
-            self.setStyleSheet("background-color: rgba(0, 0, 0, 50); border: 0")
+            self.setStyleSheet("background-color: rgba(0, 0, 0, 0)")
 
         def eventFilter(self, obj, event):
             if event.type() == QtCore.QEvent.KeyPress and obj is self.t:
                 if event.key() == QtCore.Qt.Key_Return and self.t.hasFocus():
+                    self.backspace_buffer = 0
                     self.cursor.insertText(str(os.getcwd())+" > ")
                 if event.key() == QtCore.Qt.Key_Backspace and self.t.hasFocus():
                     self.backspace_buffer -= 1
