@@ -160,7 +160,6 @@ def GlobalBlur(HWND,hexColor=False,Acrylic=False,Dark=False,QWidget=None):
     system = platform.system()
 
     if system == 'Windows':
-        print('Windows')
         if release == 'Vista':
             Win7Blur(HWND,Acrylic)
         else:
@@ -217,7 +216,7 @@ if __name__ == '__main__':
                     self.cursor.insertText(str(os.getcwd())+" > ")
                 if event.key() == QtCore.Qt.Key_Backspace and self.t.hasFocus():
                     if(self.backspace_buffer == 0):
-                        event.ignore()
+                        return True # Ignores backspace
                     else:
                         self.backspace_buffer -= 1
                 if (event.key() != QtCore.Qt.Key_Backspace and event.key() != QtCore.Qt.Key_Return)and self.t.hasFocus():
