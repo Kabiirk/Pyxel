@@ -162,12 +162,10 @@ def GlobalBlur(HWND,hexColor=False,Acrylic=False,Dark=False,QWidget=None):
     if system == 'Windows':
         print('Windows')
         if release == 'Vista':
-            print('Winblur')
             Win7Blur(HWND,Acrylic)
         else:
             release = int(float(release))
             if release == 10 or release == 8 or release == 11: #idk what windows 8.1 spits, if is '8.1' int(float(release)) will work...
-                print('blur')
                 blur(HWND,hexColor,Acrylic,Dark)
             else:
                 print('Winblur 2')
@@ -218,7 +216,10 @@ if __name__ == '__main__':
                     self.backspace_buffer = 0
                     self.cursor.insertText(str(os.getcwd())+" > ")
                 if event.key() == QtCore.Qt.Key_Backspace and self.t.hasFocus():
-                    self.backspace_buffer -= 1
+                    if(self.backspace_buffer == 0):
+                        event.ignore()
+                    else:
+                        self.backspace_buffer -= 1
                 if (event.key() != QtCore.Qt.Key_Backspace and event.key() != QtCore.Qt.Key_Return)and self.t.hasFocus():
                     self.backspace_buffer += 1
                     print(self.backspace_buffer)
