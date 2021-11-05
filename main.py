@@ -200,7 +200,7 @@ if __name__ == '__main__':
             font = QFont("Consolas", 10)
             self.t.setFont(font)
             self.cursor = self.t.textCursor()
-            self.cursor.insertText(str(os.getcwd())+" > ")
+            self.cursor.insertText(" > ")
             layout.addWidget(self.t)
             self.setLayout(layout)
             #t.setText('PyTerm >')
@@ -213,7 +213,8 @@ if __name__ == '__main__':
             if event.type() == QtCore.QEvent.KeyPress and obj is self.t:
                 if event.key() == QtCore.Qt.Key_Return and self.t.hasFocus():
                     self.backspace_buffer = 0
-                    self.cursor.insertText(str(os.getcwd())+" > ")
+                    self.cursor.insertText(" > ")
+                    self.t.moveCursor(self.cursor.End)
                 if event.key() == QtCore.Qt.Key_Backspace and self.t.hasFocus():
                     if(self.backspace_buffer == 0):
                         return True # Ignores backspace
@@ -221,7 +222,6 @@ if __name__ == '__main__':
                         self.backspace_buffer -= 1
                 if (event.key() != QtCore.Qt.Key_Backspace and event.key() != QtCore.Qt.Key_Return)and self.t.hasFocus():
                     self.backspace_buffer += 1
-                    print(self.backspace_buffer)
                     
             return super().eventFilter(obj, event)
 
