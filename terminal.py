@@ -87,28 +87,32 @@ class Terminal(QTextEdit):
         if self.notifier:
             self.notifier.disconnect()
 
-        self.pty_m, pty_s = os.openpty()
+        proc = subprocess.Popen('cmd.exe', stdin = subprocess.PIPE, stdout = subprocess.PIPE)
+        stdout, stderr = proc.communicate(b'dir c:\\')
+        print(stdout)
+
+        #self.pty_m, pty_s = os.openpty()
 
         self.backspace_budget = 0
 
         child_env = os.environ.copy()
         child_env['TERM'] = 'tty'
 
-        # Launch the subprocess
-        # FIXME: Keep a reference so we can reap zombie processes
-        subprocess.Popen(argv,  # nosec
-            stdin=pty_s, stdout=pty_s, stderr=pty_s,
-            env=child_env,
-            preexec_fn=os.setsid)
+        # # Launch the subprocess
+        # # FIXME: Keep a reference so we can reap zombie processes
+        # subprocess.Popen(argv,  # nosec
+        #     stdin=pty_s, stdout=pty_s, stderr=pty_s,
+        #     env=child_env,
+        #     preexec_fn=os.setsid)
 
-        # Close the child side of the PTY so that we can detect when to exit
-        os.close(pty_s)
+        # # Close the child side of the PTY so that we can detect when to exit
+        #os.close(stderr)
 
         # Hook up an event handler for data waiting on the PTY
         # (Because I didn't feel like looking into whether QProcess can be
         #  integrated with PTYs as a subprocess.Popen alternative)
         self.notifier = QSocketNotifier(
-            self.pty_m, QSocketNotifier.Read, self)
+            stdout, QSocketNotifier.Read, self)
         self.notifier.activated.connect(self.cb_echo)
 
 if __name__ == '__main__':
