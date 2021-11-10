@@ -76,9 +76,9 @@ class Terminal(QTextEdit):
 
         # Regardless of what we do, send the character to the PTY
         # (Let the kernel's PTY implementation do most of the heavy lifting)
-        print(self.codec[1])
-        print(char.encode(self.codec[1]))
-        print(self.pty_m)
+        print("Codec", self.codec[1])
+        print("Char.encode", char.encode(self.codec[1]))
+        #print(self.pty_m)
         #os.write(self.pty_m, char.encode(self.codec[1]))
 
         scroller = self.verticalScrollBar()
@@ -90,9 +90,9 @@ class Terminal(QTextEdit):
         if self.notifier:
             self.notifier.disconnect()
 
-        proc = subprocess.Popen('cmd.exe', stdin = subprocess.PIPE, stdout = subprocess.PIPE)
+        proc = subprocess.Popen('cmd.exe', stdin = subprocess.PIPE, stdout = subprocess.PIPE, stderr=subprocess.PIPE)
         self.pty_m, stderr = proc.communicate(b'dir c:\\')
-        print(self.pty_m)
+        #print(self.pty_m)
 
         #self.pty_m, pty_s = os.openpty()
 
@@ -109,7 +109,9 @@ class Terminal(QTextEdit):
         #     preexec_fn=os.setsid)
 
         # # Close the child side of the PTY so that we can detect when to exit
-        #os.close(stderr)
+        #print(int.from_bytes(b'', "big")  )
+        #print("stderr", stderr)
+        os.close(int.from_bytes(b'', "big") )
 
         # Hook up an event handler for data waiting on the PTY
         # (Because I didn't feel like looking into whether QProcess can be
