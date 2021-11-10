@@ -26,6 +26,7 @@ class Terminal(QTextEdit):
     pty_m = None
     subproc = None
     notifier = None
+    string_buffer = ''
     
     def __init__(self, *args, **kwargs):
         super(Terminal, self).__init__(*args, **kwargs)
@@ -57,7 +58,7 @@ class Terminal(QTextEdit):
     def keyPressEvent(self, event):
         """Handler for all key presses delivered while the widget has focus"""
         char = event.text()
-        print(char)
+        print("CHAR", char)
 
         # Move the cursor to the end
         self.moveCursor(QTextCursor.End)
@@ -73,6 +74,9 @@ class Terminal(QTextEdit):
             self.backspace_budget -= 1
         elif char == '\r':                                # Enter
             self.backspace_budget = 0
+            print("Executing : ", self.string_buffer)
+            self.string_buffer = ''
+        self.string_buffer += char
 
         # Regardless of what we do, send the character to the PTY
         # (Let the kernel's PTY implementation do most of the heavy lifting)
