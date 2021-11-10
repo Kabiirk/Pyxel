@@ -57,6 +57,7 @@ class Terminal(QTextEdit):
     def keyPressEvent(self, event):
         """Handler for all key presses delivered while the widget has focus"""
         char = event.text()
+        print(char)
 
         # Move the cursor to the end
         self.moveCursor(QTextCursor.End)
@@ -76,7 +77,8 @@ class Terminal(QTextEdit):
         # Regardless of what we do, send the character to the PTY
         # (Let the kernel's PTY implementation do most of the heavy lifting)
         print(self.codec[1])
-        os.write(self.pty_m, char.encode(self.codec[1]))
+        print(char.encode(self.codec[1]))
+        #os.write(self.pty_m, char.encode(self.codec[1]))
 
         scroller = self.verticalScrollBar()
         scroller.setValue(scroller.maximum())
