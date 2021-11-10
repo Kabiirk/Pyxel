@@ -78,6 +78,7 @@ class Terminal(QTextEdit):
         # (Let the kernel's PTY implementation do most of the heavy lifting)
         print(self.codec[1])
         print(char.encode(self.codec[1]))
+        print(self.pty_m)
         #os.write(self.pty_m, char.encode(self.codec[1]))
 
         scroller = self.verticalScrollBar()
@@ -90,8 +91,8 @@ class Terminal(QTextEdit):
             self.notifier.disconnect()
 
         proc = subprocess.Popen('cmd.exe', stdin = subprocess.PIPE, stdout = subprocess.PIPE)
-        stdout, stderr = proc.communicate(b'dir c:\\')
-        print(stdout)
+        self.pty_m, stderr = proc.communicate(b'dir c:\\')
+        print(self.pty_m)
 
         #self.pty_m, pty_s = os.openpty()
 
@@ -114,7 +115,7 @@ class Terminal(QTextEdit):
         # (Because I didn't feel like looking into whether QProcess can be
         #  integrated with PTYs as a subprocess.Popen alternative)
         self.notifier = QSocketNotifier(
-            stdout, QSocketNotifier.Read, self)
+            self.pty_m, QSocketNotifier.Read, self)
         self.notifier.activated.connect(self.cb_echo)
 
 if __name__ == '__main__':
