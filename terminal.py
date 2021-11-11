@@ -76,8 +76,9 @@ class Terminal(QTextEdit):
         elif char == '\r':                                # Enter
             self.backspace_budget = 0
             print("Executing : ", self.string_buffer)
-            procc = subprocess.Popen(self.string_buffer.split(' '), stdout=subprocess.PIPE)
+            procc = subprocess.Popen(self.string_buffer.split(' '), stdout=subprocess.PIPE, shell=True)
             out, err = procc.communicate()
+            procc.kill()
             #print(out.decode("utf-8"))
             self.append(out.decode("utf-8"))
             self.string_buffer = ''
