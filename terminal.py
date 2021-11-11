@@ -1,5 +1,6 @@
 import sys, os, locale, struct
 import subprocess
+from PyQt5 import QtCore
 from PyQt5.QtGui import QFont, QPalette, QTextCursor
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -75,13 +76,17 @@ class Terminal(QTextEdit):
         elif char == '\r':                                # Enter
             self.backspace_budget = 0
             print("Executing : ", self.string_buffer)
+            procc = subprocess.Popen(self.string_buffer.split(' '), stdout=subprocess.PIPE)
+            out, err = procc.communicate()
+            #print(out.decode("utf-8"))
+            self.append(out.decode("utf-8"))
             self.string_buffer = ''
         self.string_buffer += char
 
         # Regardless of what we do, send the character to the PTY
         # (Let the kernel's PTY implementation do most of the heavy lifting)
-        print("Codec", self.codec[1])
-        print("Char.encode", char.encode(self.codec[1]))
+        #print("Codec", self.codec[1])
+        print("Char.encode", int.from_bytes(char.encode(self.codec[1]), "big"))
         #print(self.pty_m)
         #os.write(self.pty_m, char.encode(self.codec[1]))
 
