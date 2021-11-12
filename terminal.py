@@ -75,7 +75,7 @@ class Terminal(QTextEdit):
             self.backspace_budget -= 1
         elif char == '\r':                                # Enter
             self.backspace_budget = 0
-            print("Executing : ", self.string_buffer)
+            print("Executing : " + self.string_buffer)
             procc = subprocess.Popen(self.string_buffer.split(' '), stdout=subprocess.PIPE, shell=True)
             out, err = procc.communicate()
             procc.kill()
@@ -126,9 +126,9 @@ class Terminal(QTextEdit):
         # Hook up an event handler for data waiting on the PTY
         # (Because I didn't feel like looking into whether QProcess can be
         #  integrated with PTYs as a subprocess.Popen alternative)
-        self.notifier = QSocketNotifier(
-            self.pty_m, QSocketNotifier.Read, self)
-        self.notifier.activated.connect(self.cb_echo)
+        # self.notifier = QSocketNotifier(
+        #     self.pty_m, QSocketNotifier.Read, self)
+        # self.notifier.activated.connect(self.cb_echo)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
