@@ -6,6 +6,8 @@ import platform
 import ctypes
 from PyQt5 import QtCore
 
+from terminal import Terminal
+
 from PyQt5.QtGui import QColor, QFont
 
 if platform.system() == 'Darwin':
@@ -193,14 +195,13 @@ if __name__ == '__main__':
             #print(hWnd)
             #l = QLabel('Can you see me?', self)
             layout = QVBoxLayout()
-            self.t = QTextEdit(parent=self)
+            self.t = Terminal()
             self.t.installEventFilter(self)
             self.t.setStyleSheet("QTextEdit { background-color: rgba(0, 0, 0, 0); border: 0 }")
             self.t.setTextColor(QColor('#FFFFFF'))
             font = QFont("Consolas", 10)
             self.t.setFont(font)
             self.cursor = self.t.textCursor()
-            self.cursor.insertText(" > ")
             layout.addWidget(self.t)
             self.setLayout(layout)
             #t.setText('PyTerm >')
