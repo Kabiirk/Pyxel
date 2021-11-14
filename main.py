@@ -214,7 +214,6 @@ if __name__ == '__main__':
             if event.type() == QtCore.QEvent.KeyPress and obj is self.t:
                 if event.key() == QtCore.Qt.Key_Return and self.t.hasFocus():
                     self.backspace_buffer = 0
-                    self.cursor.insertText(" > ")
                     self.t.moveCursor(self.cursor.End)
                 if event.key() == QtCore.Qt.Key_Backspace and self.t.hasFocus():
                     if(self.backspace_buffer == 0):

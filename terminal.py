@@ -75,7 +75,6 @@ class Terminal(QTextEdit):
             self.backspace_budget -= 1
         elif char == '\r':                                # Enter
             self.backspace_budget = 0
-            print("Executing : " + self.string_buffer)
             procc = subprocess.Popen(self.string_buffer.split(' '), stdout=subprocess.PIPE, shell=True)
             out, err = procc.communicate()
             procc.kill()
@@ -130,19 +129,19 @@ class Terminal(QTextEdit):
         #     self.pty_m, QSocketNotifier.Read, self)
         # self.notifier.activated.connect(self.cb_echo)
 
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    mainwin = Terminal()
+# if __name__ == '__main__':
+#     app = QApplication(sys.argv)
+#     mainwin = Terminal()
 
-    # Cheap hack to estimate what 80x25 should be in pixels and resize to it
-    fontMetrics = mainwin.fontMetrics()
-    target_width = (fontMetrics.boundingRect(
-        REFERENCE_CHAR * DEFAULT_COLS
-    ).width() + app.style().pixelMetric(QStyle.PM_ScrollBarExtent))
-    mainwin.resize(target_width, fontMetrics.height() * DEFAULT_ROWS)
+#     # Cheap hack to estimate what 80x25 should be in pixels and resize to it
+#     fontMetrics = mainwin.fontMetrics()
+#     target_width = (fontMetrics.boundingRect(
+#         REFERENCE_CHAR * DEFAULT_COLS
+#     ).width() + app.style().pixelMetric(QStyle.PM_ScrollBarExtent))
+#     mainwin.resize(target_width, fontMetrics.height() * DEFAULT_ROWS)
 
-    mainwin.spawn(DEFAULT_TTY_CMD)
+#     mainwin.spawn(DEFAULT_TTY_CMD)
 
-    # Take advantage of how Qt lets any widget be a top-level window
-    mainwin.show()
-    app.exec_()
+#     # Take advantage of how Qt lets any widget be a top-level window
+#     mainwin.show()
+#     app.exec_()
