@@ -59,7 +59,7 @@ class Terminal(QTextEdit):
     def keyPressEvent(self, event):
         """Handler for all key presses delivered while the widget has focus"""
         char = event.text()
-        print("CHAR", char)
+        #print("CHAR", char)
 
         # Move the cursor to the end
         self.moveCursor(QTextCursor.End)
@@ -77,7 +77,10 @@ class Terminal(QTextEdit):
             self.backspace_budget = 0
             procc = subprocess.Popen(self.string_buffer.split(' '), stdout=subprocess.PIPE, shell=True)
             out, err = procc.communicate()
+            print(procc.poll())
             procc.kill()
+            print(procc.poll())
+
             #print(out.decode("utf-8"))
             self.append(out.decode("utf-8"))
             self.string_buffer = ''
@@ -86,7 +89,7 @@ class Terminal(QTextEdit):
         # Regardless of what we do, send the character to the PTY
         # (Let the kernel's PTY implementation do most of the heavy lifting)
         #print("Codec", self.codec[1])
-        print("Char.encode", int.from_bytes(char.encode(self.codec[1]), "big"))
+        #print("Char.encode", int.from_bytes(char.encode(self.codec[1]), "big"))
         #print(self.pty_m)
         #os.write(self.pty_m, char.encode(self.codec[1]))
 
