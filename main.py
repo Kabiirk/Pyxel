@@ -210,20 +210,20 @@ if __name__ == '__main__':
 
             self.setStyleSheet("background-color: rgba(0, 0, 0, 0)")
 
-        def eventFilter(self, obj, event):
-            if event.type() == QtCore.QEvent.KeyPress and obj is self.t:
-                if event.key() == QtCore.Qt.Key_Return and self.t.hasFocus():
-                    self.backspace_buffer = 0
-                    self.t.moveCursor(self.cursor.End)
-                if event.key() == QtCore.Qt.Key_Backspace and self.t.hasFocus():
-                    if(self.backspace_buffer == 0):
-                        return True # Ignores backspace
-                    else:
-                        self.backspace_buffer -= 1
-                if (event.key() != QtCore.Qt.Key_Backspace and event.key() != QtCore.Qt.Key_Return)and self.t.hasFocus():
-                    self.backspace_buffer += 1
+        # def eventFilter(self, obj, event):
+        #     if event.type() == QtCore.QEvent.KeyPress and obj is self.t:
+        #         if event.key() == QtCore.Qt.Key_Return and self.t.hasFocus():
+        #             self.backspace_buffer = 0
+        #             self.t.moveCursor(self.cursor.End)
+        #         if event.key() == QtCore.Qt.Key_Backspace and self.t.hasFocus():
+        #             if(self.backspace_buffer == 0):
+        #                 return True # Ignores backspace
+        #             else:
+        #                 self.backspace_buffer -= 1
+        #         if (event.key() != QtCore.Qt.Key_Backspace and event.key() != QtCore.Qt.Key_Return)and self.t.hasFocus():
+        #             self.backspace_buffer += 1
                     
-            return super().eventFilter(obj, event)
+        #     return super().eventFilter(obj, event)
 
     app = QApplication(sys.argv)
     mw = MainWindow()

@@ -59,7 +59,8 @@ class Terminal(QTextEdit):
     def keyPressEvent(self, event):
         """Handler for all key presses delivered while the widget has focus"""
         char = event.text()
-        #print("CHAR", char)
+        #print("CHAR", char) #a
+        #print(event.key()) #65 (a in ascii)
 
         # Move the cursor to the end
         self.moveCursor(QTextCursor.End)
@@ -73,18 +74,30 @@ class Terminal(QTextEdit):
         if char == '\x08' and self.backspace_budget > 0:  # Backspace
             cursor.deletePreviousChar()
             self.backspace_budget -= 1
+            self.string_buffer = self.string_buffer[:-1] # remove last character
         elif char == '\r':                                # Enter
             self.backspace_budget = 0
-            procc = subprocess.Popen(self.string_buffer.split(' '), stdout=subprocess.PIPE, shell=True)
-            out, err = procc.communicate()
-            print(procc.poll())
-            procc.kill()
-            print(procc.poll())
+            print(self.string_buffer)
+            if(self.string_buffer == ''): # No command entered, go to nextline
+                self.append('')
+            else:
+                procc = subprocess.Popen(self.string_buffer.split(' '), stdout=subprocess.PIPE, shell=True)
+                out, err = procc.communicate()
+                procc.kill()
 
-            #print(out.decode("utf-8"))
-            self.append(out.decode("utf-8"))
-            self.string_buffer = ''
-        self.string_buffer += char
+                #print(out.decode("utf-8"))
+                self.append(out.decode("utf-8"))
+                self.append(err)#.decode("utf-8"))
+                self.string_buffer = ''
+
+        key_ascii = event.key()
+        lower_case = key_ascii>=65 and key_ascii<=90
+        upper_case = key_ascii>=97 and key_ascii<=122
+        spacebar = key_ascii==32
+        spl = [45, 46, 47] # dot, forward & backward slash, hyphen will see if others need to be added
+        special_char = key_ascii in spl # for filenames
+        if( lower_case or upper_case or spacebar or special_char):
+            self.string_buffer += char
 
         # Regardless of what we do, send the character to the PTY
         # (Let the kernel's PTY implementation do most of the heavy lifting)
