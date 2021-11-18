@@ -42,19 +42,19 @@ class Terminal(QTextEdit):
 
         self.setReadOnly(True)
     
-    def cb_echo(self, pty_m):
-        """Display output that arrives from the PTY"""
-        # Read pending data or assume the child exited if we can't
-        # (Not technically the proper way to detect child exit, but it works)
-        try:
-            # Use 'replace' as a not-ideal-but-better-than-nothing way to deal
-            # with bytes that aren't valid in the chosen encoding.
-            child_output = os.read(self.pty_m, 1024).decode(
-                self.codec, 'replace')
-        except OSError:
-            # Ask the event loop to exit and then return to it
-            QApplication.instance().quit()
-            return
+    # def cb_echo(self, pty_m):
+    #     """Display output that arrives from the PTY"""
+    #     # Read pending data or assume the child exited if we can't
+    #     # (Not technically the proper way to detect child exit, but it works)
+    #     try:
+    #         # Use 'replace' as a not-ideal-but-better-than-nothing way to deal
+    #         # with bytes that aren't valid in the chosen encoding.
+    #         child_output = os.read(self.pty_m, 1024).decode(
+    #             self.codec, 'replace')
+    #     except OSError:
+    #         # Ask the event loop to exit and then return to it
+    #         QApplication.instance().quit()
+    #         return
 
     def keyPressEvent(self, event):
         """Handler for all key presses delivered while the widget has focus"""
