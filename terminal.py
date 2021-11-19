@@ -42,19 +42,20 @@ class Terminal(QTextEdit):
 
         self.setReadOnly(True)
     
-    # def cb_echo(self, pty_m):
-    #     """Display output that arrives from the PTY"""
-    #     # Read pending data or assume the child exited if we can't
-    #     # (Not technically the proper way to detect child exit, but it works)
-    #     try:
-    #         # Use 'replace' as a not-ideal-but-better-than-nothing way to deal
-    #         # with bytes that aren't valid in the chosen encoding.
-    #         child_output = os.read(self.pty_m, 1024).decode(
-    #             self.codec, 'replace')
-    #     except OSError:
-    #         # Ask the event loop to exit and then return to it
-    #         QApplication.instance().quit()
-    #         return
+    def cb_echo(self, pty_m):
+        print('cb_echo')
+        """Display output that arrives from the PTY"""
+        # Read pending data or assume the child exited if we can't
+        # (Not technically the proper way to detect child exit, but it works)
+        try:
+            # Use 'replace' as a not-ideal-but-better-than-nothing way to deal
+            # with bytes that aren't valid in the chosen encoding.
+            child_output = os.read(self.pty_m, 1024).decode(
+                self.codec, 'replace')
+        except OSError:
+            # Ask the event loop to exit and then return to it
+            QApplication.instance().quit()
+            return
 
     def keyPressEvent(self, event):
         """Handler for all key presses delivered while the widget has focus"""
@@ -141,23 +142,24 @@ class Terminal(QTextEdit):
         # Hook up an event handler for data waiting on the PTY
         # (Because I didn't feel like looking into whether QProcess can be
         #  integrated with PTYs as a subprocess.Popen alternative)
-        # self.notifier = QSocketNotifier(
-        #     self.pty_m, QSocketNotifier.Read, self)
-        # self.notifier.activated.connect(self.cb_echo)
+        print("Notifier runs !")
+        self.notifier = QSocketNotifier(
+            self.pty_m, QSocketNotifier.Read, self)
+        self.notifier.activated.connect(self.cb_echo)
 
-# if __name__ == '__main__':
-#     app = QApplication(sys.argv)
-#     mainwin = Terminal()
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    mainwin = Terminal()
 
-#     # Cheap hack to estimate what 80x25 should be in pixels and resize to it
-#     fontMetrics = mainwin.fontMetrics()
-#     target_width = (fontMetrics.boundingRect(
-#         REFERENCE_CHAR * DEFAULT_COLS
-#     ).width() + app.style().pixelMetric(QStyle.PM_ScrollBarExtent))
-#     mainwin.resize(target_width, fontMetrics.height() * DEFAULT_ROWS)
+    # Cheap hack to estimate what 80x25 should be in pixels and resize to it
+    fontMetrics = mainwin.fontMetrics()
+    target_width = (fontMetrics.boundingRect(
+        REFERENCE_CHAR * DEFAULT_COLS
+    ).width() + app.style().pixelMetric(QStyle.PM_ScrollBarExtent))
+    mainwin.resize(target_width, fontMetrics.height() * DEFAULT_ROWS)
 
-#     mainwin.spawn(DEFAULT_TTY_CMD)
+    mainwin.spawn(DEFAULT_TTY_CMD)
 
-#     # Take advantage of how Qt lets any widget be a top-level window
-#     mainwin.show()
-#     app.exec_()
+    # Take advantage of how Qt lets any widget be a top-level window
+    mainwin.show()
+    app.exec_()
