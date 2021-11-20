@@ -118,7 +118,8 @@ class Terminal(QTextEdit):
 
         proc = subprocess.Popen('cmd.exe', stdin = subprocess.PIPE, stdout = subprocess.PIPE, stderr=subprocess.PIPE)
         self.pty_m, stderr = proc.communicate(b'dir c:\\')
-        #print(self.pty_m)
+        print(self.pty_m)
+        print(stderr)
 
         #self.pty_m, pty_s = os.openpty()
 
@@ -142,7 +143,6 @@ class Terminal(QTextEdit):
         # Hook up an event handler for data waiting on the PTY
         # (Because I didn't feel like looking into whether QProcess can be
         #  integrated with PTYs as a subprocess.Popen alternative)
-        print("Notifier runs !")
         self.notifier = QSocketNotifier(
             self.pty_m, QSocketNotifier.Read, self)
         self.notifier.activated.connect(self.cb_echo)
