@@ -82,7 +82,11 @@ class Terminal(QTextEdit):
             if(self.string_buffer == ''): # No command entered, go to nextline
                 self.append('')
             else:
-                procc = subprocess.Popen(self.string_buffer.split(' '), stdout=subprocess.PIPE, shell=True)
+                command_list = self.string_buffer.split(' ')
+                if(command_list[0] == 'cls'):
+                    self.clear()
+                    pass
+                procc = subprocess.Popen(command_list, stdout=subprocess.PIPE, shell=True)
                 out, err = procc.communicate()
                 procc.kill()
 
