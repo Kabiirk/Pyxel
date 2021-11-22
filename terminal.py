@@ -90,8 +90,13 @@ class Terminal(QTextEdit):
                 out, err = procc.communicate()
                 procc.kill()
 
-                #print(out.decode("utf-8"))
-                self.append(out.decode("utf-8"))
+                print(out.decode("utf-8"))
+                # self.append(out.decode("utf-8")) # Causes error with "tree" commmand
+                # Error message 
+                # Ref : UnicodeDecodeError: 'utf-8' codec can't decode byte 0xc0 in position 75: invalid start byte    
+                # https://stackoverflow.com/questions/23772144/python-unicodedecodeerror-utf8-codec-cant-decode-byte-0xc0-in-position-0-i
+                # https://stackoverflow.com/questions/27453879/unicode-decode-error-how-to-skip-invalid-characters/27456542#27456542
+                #self.append(out.decode("ISO-8859-1")) # Causes error with "tree" commmand
                 self.append(err)#.decode("utf-8"))
                 self.string_buffer = ''
 
@@ -99,7 +104,7 @@ class Terminal(QTextEdit):
         lower_case = key_ascii>=65 and key_ascii<=90
         upper_case = key_ascii>=97 and key_ascii<=122
         spacebar = key_ascii==32
-        spl = [45, 46, 47] # dot, forward & backward slash, hyphen will see if others need to be added
+        spl = [45, 46, 47, 33] # dot, forward & backward slash, hyphen, exclamation will see if others need to be added
         special_char = key_ascii in spl # for filenames
         if( lower_case or upper_case or spacebar or special_char):
             self.string_buffer += char
