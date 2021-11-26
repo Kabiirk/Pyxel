@@ -86,12 +86,19 @@ class Terminal(QTextEdit):
                 if(command_list[0] == 'cls'):
                     self.clear()
                     pass
+                    
                 procc = subprocess.Popen(command_list, stdout=subprocess.PIPE, shell=True)
                 out, err = procc.communicate()
                 procc.kill()
 
-                print(out.decode("mbcs"))
-                print(out.decode("unicode_escape"))
+                if(command_list[0] == 'tree'):
+                    # Ref. : For encoding and buffer
+                    # https://stackoverflow.com/questions/1259084/what-encoding-code-page-is-cmd-exe-using
+                    print(out.hex())
+
+                print("Out", out)
+                print("mbcs", out.decode("mbcs"))
+                print("unicode",out.decode("unicode_escape"))
                 # self.append(out.decode("utf-8")) # Causes error with "tree" commmand
                 # Error message 
                 # Ref : UnicodeDecodeError: 'utf-8' codec can't decode byte 0xc0 in position 75: invalid start byte    
