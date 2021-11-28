@@ -85,19 +85,29 @@ class Terminal(QTextEdit):
                 command_list = self.string_buffer.split(' ')
                 if(command_list[0] == 'cls'):
                     self.clear()
-                    pass
-                    
+                    self.string_buffer = ''
+                    return
+                print("This got executed")
                 procc = subprocess.Popen(command_list, stdout=subprocess.PIPE, shell=True)
                 out, err = procc.communicate()
                 procc.kill()
 
+                if(command_list[0] == 'cmd'):
+                    # breaks terminal and kills pipe while debugging
+                    # Crashes program and gives this error in IDE terminal
+                    # "The process tried to write to a nonexistent pipe.""
+                    self.append("Don't go, Please stay here :(")
+                    self.string_buffer = ''
+                    return
                 if(command_list[0] == 'tree'):
                     # Ref. : For encoding and buffer
                     # https://stackoverflow.com/questions/1259084/what-encoding-code-page-is-cmd-exe-using
-                    print(out.hex())
+                    # solved with https://superuser.com/questions/384248/how-can-i-store-windows-tree-command-output-in-a-file-and-retrieve-it-again
+                    # Using CP437 Solved issue : https://en.wikipedia.org/wiki/Code_page_437
+                    # Google search query : https://www.google.com/search?q=output+of+tree+command+encoded+in&rlz=1C1CHBD_enIN909IN910&oq=output+of+tree+command+encoded+in&aqs=chrome..69i57j33i160l4.7509j0j7&sourceid=chrome&ie=UTF-8
+                    self.append(out.decode("CP437"))
+                    return
 
-                print("Out", out)
-                print("mbcs", out.decode("mbcs"))
                 print("unicode",out.decode("unicode_escape"))
                 # self.append(out.decode("utf-8")) # Causes error with "tree" commmand
                 # Error message 
@@ -105,7 +115,7 @@ class Terminal(QTextEdit):
                 # https://stackoverflow.com/questions/23772144/python-unicodedecodeerror-utf8-codec-cant-decode-byte-0xc0-in-position-0-i
                 # https://stackoverflow.com/questions/27453879/unicode-decode-error-how-to-skip-invalid-characters/27456542#27456542
                 #self.append(out.decode("ISO-8859-1")) # Causes error with "tree" commmand
-                self.append(out.decode("mbcs"))
+                self.append(out.decode("CP437"))
                 self.append(err)#.decode("utf-8"))
                 self.string_buffer = ''
 
