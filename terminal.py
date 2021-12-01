@@ -60,8 +60,6 @@ class Terminal(QTextEdit):
     def keyPressEvent(self, event):
         """Handler for all key presses delivered while the widget has focus"""
         char = event.text()
-        #print("CHAR", char) #a
-        #print(event.key()) #65 (a in ascii)
 
         # Move the cursor to the end
         self.moveCursor(QTextCursor.End)
@@ -85,20 +83,20 @@ class Terminal(QTextEdit):
                 command_list = self.string_buffer.split(' ')
                 if(command_list[0] == 'cls'):
                     self.clear()
-                    self.string_buffer = ''
+                    self.reset_string_buffer()
+                    return
+                if(command_list[0] == 'cmd'):
+                    # breaks terminal and kills pipe while debugging
+                    # Crashes program and gives this error in IDE terminal
+                    # "The process tried to write to a nonexistent pipe.""
+                    self.append("Don't go, Please stay here :(\r")
+                    self.reset_string_buffer()
                     return
                 print("This got executed")
                 procc = subprocess.Popen(command_list, stdout=subprocess.PIPE, shell=True)
                 out, err = procc.communicate()
                 procc.kill()
 
-                if(command_list[0] == 'cmd'):
-                    # breaks terminal and kills pipe while debugging
-                    # Crashes program and gives this error in IDE terminal
-                    # "The process tried to write to a nonexistent pipe.""
-                    self.append("Don't go, Please stay here :(")
-                    self.string_buffer = ''
-                    return
                 if(command_list[0] == 'tree'):
                     # Ref. : For encoding and buffer
                     # https://stackoverflow.com/questions/1259084/what-encoding-code-page-is-cmd-exe-using
@@ -106,9 +104,9 @@ class Terminal(QTextEdit):
                     # Using CP437 Solved issue : https://en.wikipedia.org/wiki/Code_page_437
                     # Google search query : https://www.google.com/search?q=output+of+tree+command+encoded+in&rlz=1C1CHBD_enIN909IN910&oq=output+of+tree+command+encoded+in&aqs=chrome..69i57j33i160l4.7509j0j7&sourceid=chrome&ie=UTF-8
                     self.append(out.decode("CP437"))
+                    self.reset_string_buffer()
                     return
 
-                print("unicode",out.decode("unicode_escape"))
                 # self.append(out.decode("utf-8")) # Causes error with "tree" commmand
                 # Error message 
                 # Ref : UnicodeDecodeError: 'utf-8' codec can't decode byte 0xc0 in position 75: invalid start byte    
@@ -116,8 +114,8 @@ class Terminal(QTextEdit):
                 # https://stackoverflow.com/questions/27453879/unicode-decode-error-how-to-skip-invalid-characters/27456542#27456542
                 #self.append(out.decode("ISO-8859-1")) # Causes error with "tree" commmand
                 self.append(out.decode("CP437"))
-                self.append(err)#.decode("utf-8"))
-                self.string_buffer = ''
+                #self.append(err)#.decode("utf-8"))
+                self.reset_string_buffer()
 
         key_ascii = event.key()
         lower_case = key_ascii>=65 and key_ascii<=90
@@ -174,6 +172,9 @@ class Terminal(QTextEdit):
         self.notifier = QSocketNotifier(
             self.pty_m, QSocketNotifier.Read, self)
         self.notifier.activated.connect(self.cb_echo)
+    
+    def reset_string_buffer(self):
+        self.string_buffer = ''
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
