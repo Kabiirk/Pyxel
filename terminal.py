@@ -144,8 +144,8 @@ class Terminal(QTextEdit):
 
         proc = subprocess.Popen('cmd.exe', stdin = subprocess.PIPE, stdout = subprocess.PIPE, stderr=subprocess.PIPE)
         self.pty_m, stderr = proc.communicate(b'dir c:\\')
-        print(self.pty_m)
-        print(stderr)
+        # print(self.pty_m)
+        # print(stderr)
 
         #self.pty_m, pty_s = os.openpty()
 
