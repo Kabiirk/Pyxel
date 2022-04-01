@@ -4,6 +4,7 @@ from PyQt5 import QtCore
 from PyQt5.QtGui import QFont, QPalette, QTextCursor
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
+import re
 
 
 ##########GLOBALS###########
@@ -39,6 +40,7 @@ class Terminal(QTextEdit):
         pal.setColor(QPalette.Text, DEFAULT_TTY_FG)
         self.setPalette(pal)
         self.setFont(DEFAULT_TTY_FONT)
+        self.insertPlainText(' > ')
 
         self.setReadOnly(True)
     
@@ -76,46 +78,68 @@ class Terminal(QTextEdit):
             self.string_buffer = self.string_buffer[:-1] # remove last character
         elif char == '\r':                                # Enter
             self.backspace_budget = 0
-            print(self.string_buffer)
             if(self.string_buffer == ''): # No command entered, go to nextline
-                self.append('')
+                cursor.insertText(' > ')
             else:
                 command_list = self.string_buffer.split(' ')
                 if(command_list[0] == 'cls'):
                     self.clear()
                     self.reset_string_buffer()
+                    cursor.insertText(' > ')
                     return
                 if(command_list[0] == 'cmd'):
                     # breaks terminal and kills pipe while debugging
                     # Crashes program and gives this error in IDE terminal
                     # "The process tried to write to a nonexistent pipe.""
-                    self.append("Don't go, Please stay here :(\r")
+                    cursor.insertText("Don't go, Please stay here :(\r")# append()
+                    cursor.insertText(' > ')
                     self.reset_string_buffer()
                     return
-                print("This got executed")
-                procc = subprocess.Popen(command_list, stdout=subprocess.PIPE, shell=True)
-                out, err = procc.communicate()
-                procc.kill()
+                # print("This got executed")
+                # procc = subprocess.Popen(command_list, stdout=subprocess.PIPE, shell=True)
+                # out, err = procc.communicate()
+                # procc.kill()
+                try:
+                    cmd = subprocess.Popen(command_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+                    cmd_out = cmd.stdout.read()
+                    cmd_err = cmd.stderr.readline()
+                    # print('out ', cmd_out)
+                    # print('err ', cmd_err)
+                    cmd.kill()
+                    # out, err = procc.communicate()
+                    # procc.kill()
+                    if(cmd_out!=''):
+                        print("valid")
+                    elif(cmd_err!=''):
+                        print("error")
 
-                if(command_list[0] == 'tree'):
-                    # Ref. : For encoding and buffer
-                    # https://stackoverflow.com/questions/1259084/what-encoding-code-page-is-cmd-exe-using
-                    # solved with https://superuser.com/questions/384248/how-can-i-store-windows-tree-command-output-in-a-file-and-retrieve-it-again
-                    # Using CP437 Solved issue : https://en.wikipedia.org/wiki/Code_page_437
-                    # Google search query : https://www.google.com/search?q=output+of+tree+command+encoded+in&rlz=1C1CHBD_enIN909IN910&oq=output+of+tree+command+encoded+in&aqs=chrome..69i57j33i160l4.7509j0j7&sourceid=chrome&ie=UTF-8
-                    self.append(out.decode("CP437"))
+                    # Process output
+                    if(command_list[0] == 'tree'):
+                        # Ref. : For encoding and buffer
+                        # https://stackoverflow.com/questions/1259084/what-encoding-code-page-is-cmd-exe-using
+                        # solved with https://superuser.com/questions/384248/how-can-i-store-windows-tree-command-output-in-a-file-and-retrieve-it-again
+                        # Using CP437 Solved issue : https://en.wikipedia.org/wiki/Code_page_437
+                        # Google search query : https://www.google.com/search?q=output+of+tree+command+encoded+in&rlz=1C1CHBD_enIN909IN910&oq=output+of+tree+command+encoded+in&aqs=chrome..69i57j33i160l4.7509j0j7&sourceid=chrome&ie=UTF-8
+                        cursor.insertText(cmd_out.decode("CP437"))
+                        cursor.insertText(' > ')
+                        self.reset_string_buffer()
+                        return
+
+                    # self.append(out.decode("utf-8")) # Causes error with "tree" commmand
+                    # Error message 
+                    # Ref : UnicodeDecodeError: 'utf-8' codec can't decode byte 0xc0 in position 75: invalid start byte    
+                    # https://stackoverflow.com/questions/23772144/python-unicodedecodeerror-utf8-codec-cant-decode-byte-0xc0-in-position-0-i
+                    # https://stackoverflow.com/questions/27453879/unicode-decode-error-how-to-skip-invalid-characters/27456542#27456542
+                    #self.append(out.decode("ISO-8859-1")) # Causes error with "tree" commmand
+                    cursor.insertText(cmd_out.decode("CP437"))
+                    cursor.insertText(' > ')
+                    #self.append(err)#.decode("utf-8"))
                     self.reset_string_buffer()
-                    return
 
-                # self.append(out.decode("utf-8")) # Causes error with "tree" commmand
-                # Error message 
-                # Ref : UnicodeDecodeError: 'utf-8' codec can't decode byte 0xc0 in position 75: invalid start byte    
-                # https://stackoverflow.com/questions/23772144/python-unicodedecodeerror-utf8-codec-cant-decode-byte-0xc0-in-position-0-i
-                # https://stackoverflow.com/questions/27453879/unicode-decode-error-how-to-skip-invalid-characters/27456542#27456542
-                #self.append(out.decode("ISO-8859-1")) # Causes error with "tree" commmand
-                self.append(out.decode("CP437"))
-                #self.append(err)#.decode("utf-8"))
-                self.reset_string_buffer()
+                except OSError:
+                    cursor.insertText("Invalid command, for now")
+                    cursor.insertText(' > ')
+                    self.reset_string_buffer()
 
         key_ascii = event.key()
         lower_case = key_ascii>=65 and key_ascii<=90
@@ -176,19 +200,19 @@ class Terminal(QTextEdit):
     def reset_string_buffer(self):
         self.string_buffer = ''
 
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    mainwin = Terminal()
+# if __name__ == '__main__':
+#     app = QApplication(sys.argv)
+#     mainwin = Terminal()
 
-    # Cheap hack to estimate what 80x25 should be in pixels and resize to it
-    fontMetrics = mainwin.fontMetrics()
-    target_width = (fontMetrics.boundingRect(
-        REFERENCE_CHAR * DEFAULT_COLS
-    ).width() + app.style().pixelMetric(QStyle.PM_ScrollBarExtent))
-    mainwin.resize(target_width, fontMetrics.height() * DEFAULT_ROWS)
+#     # Cheap hack to estimate what 80x25 should be in pixels and resize to it
+#     fontMetrics = mainwin.fontMetrics()
+#     target_width = (fontMetrics.boundingRect(
+#         REFERENCE_CHAR * DEFAULT_COLS
+#     ).width() + app.style().pixelMetric(QStyle.PM_ScrollBarExtent))
+#     mainwin.resize(target_width, fontMetrics.height() * DEFAULT_ROWS)
 
-    mainwin.spawn(DEFAULT_TTY_CMD)
+#     mainwin.spawn(DEFAULT_TTY_CMD)
 
-    # Take advantage of how Qt lets any widget be a top-level window
-    mainwin.show()
-    app.exec_()
+#     # Take advantage of how Qt lets any widget be a top-level window
+#     mainwin.show()
+#     app.exec_()
