@@ -97,7 +97,7 @@ class Terminal(QTextEdit):
                     cursor.insertText(' > ')
                     self.reset_string_buffer()
                     return
-                # print("This got executed")
+
                 # procc = subprocess.Popen(command_list, stdout=subprocess.PIPE, shell=True)
                 # out, err = procc.communicate()
                 # procc.kill()
@@ -105,7 +105,7 @@ class Terminal(QTextEdit):
                     cmd = subprocess.Popen(command_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                     cmd_out = cmd.stdout.read()
                     cmd_err = cmd.stderr.readline()
-                    # print(cmd_out)
+
                     cmd.kill()
                     # out, err = procc.communicate()
                     # procc.kill()
@@ -133,7 +133,6 @@ class Terminal(QTextEdit):
                         #self.append(out.decode("ISO-8859-1")) # Causes error with "tree" commmand
                         cursor.insertText(cmd_out.decode("CP437"))
                         cursor.insertText(' > ')
-                        #self.append(err)#.decode("utf-8"))
                         self.reset_string_buffer()
                     elif(cmd_err!=b''):
                         '''
@@ -175,8 +174,6 @@ class Terminal(QTextEdit):
 
         proc = subprocess.Popen('cmd.exe', stdin = subprocess.PIPE, stdout = subprocess.PIPE, stderr=subprocess.PIPE)
         self.pty_m, stderr = proc.communicate(b'dir c:\\')
-        # print(self.pty_m)
-        # print(stderr)
 
         #self.pty_m, pty_s = os.openpty()
 
@@ -193,8 +190,6 @@ class Terminal(QTextEdit):
         #     preexec_fn=os.setsid)
 
         # # Close the child side of the PTY so that we can detect when to exit
-        #print(int.from_bytes(b'', "big")  )
-        #print("stderr", stderr)
         os.close(int.from_bytes(b'', "big") )
 
         # Hook up an event handler for data waiting on the PTY
