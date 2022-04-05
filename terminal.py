@@ -105,6 +105,8 @@ class Terminal(QTextEdit):
                     cmd = subprocess.Popen(command_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                     cmd_out = cmd.stdout.read()
                     cmd_err = cmd.stderr.readline()
+                    print('CMD OUT: ',cmd_out)
+                    print('CMD ERR: ',cmd_err)
 
                     cmd.kill()
                     # out, err = procc.communicate()
